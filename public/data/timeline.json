@@ -1,0 +1,58 @@
+[
+  {
+    "id": "clip_001",
+    "script_block_id": "sb_001",
+    "shot_id": "shot_001",
+    "trim_in": 0.0,
+    "trim_out": 3.0,
+    "duration": 3.0
+  },
+  {
+    "id": "clip_002",
+    "script_block_id": "sb_001",
+    "shot_id": "shot_002",
+    "trim_in": 0.5,
+    "trim_out": 4.5,
+    "duration": 4.0
+  },
+  {
+    "id": "clip_003",
+    "script_block_id": "sb_002",
+    "shot_id": "shot_003",
+    "trim_in": 0.0,
+    "trim_out": 2.0,
+    "duration": 2.0
+  },
+  {
+    "id": "clip_004",
+    "script_block_id": "sb_002",
+    "shot_id": "shot_005",
+    "trim_in": 0.0,
+    "trim_out": 3.5,
+    "duration": 3.5
+  },
+  {
+    "id": "clip_005",
+    "script_block_id": "sb_003",
+    "shot_id": "shot_006",
+    "trim_in": 0.0,
+    "trim_out": 4.5,
+    "duration": 4.5
+  },
+  {
+    "id": "clip_006",
+    "script_block_id": "sb_004",
+    "shot_id": "shot_007",
+    "trim_in": 0.0,
+    "trim_out": 3.0,
+    "duration": 3.0
+  },
+  {
+    "id": "clip_007",
+    "script_block_id": "sb_005",
+    "shot_id": "shot_008",
+    "trim_in": 0.0,
+    "trim_out": 2.5,
+    "duration": 2.5
+  }
+]

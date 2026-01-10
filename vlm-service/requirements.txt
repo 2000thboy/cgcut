@@ -1,0 +1,16 @@
+# MiniMind-V 视频描述服务依赖
+# Python 3.9+ 推荐
+
+# 核心依赖
+torch>=2.0.0
+torchvision>=0.15.0
+transformers>=4.30.0
+Pillow>=9.0.0
+
+# Web服务
+fastapi>=0.100.0
+uvicorn>=0.22.0
+
+# 视频处理
+opencv-python>=4.8.0
+numpy>=1.24.0

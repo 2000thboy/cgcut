@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "MVP API 综合评估",
+  "description": "对项目整体API节点进行测试，评估MVP可行性和开发进度。以资深项目开发者视角进行全面评估，发现问题后进行测试验证，测试完成后清理测试内容并生成评估报告。",
+  "version": "1",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "作为一名资深项目开发者，请对当前项目进行全面的MVP评估：\n\n1. **API节点测试**：\n   - 检查 src/services/ 下所有服务文件（clipService.ts, llmService.ts, searchService.ts, taggingService.ts）\n   - 验证每个API端点的可用性和响应\n   - 测试 clip-service 和 vlm-service 的Python服务接口\n\n2. **MVP功能验证**：\n   - 参考 docs/MVP-CHECK-REPORT.md 和 docs/MVP_TEST_REPORT.md 了解已有测试结果\n   - 运行 `node tests/mvp-api-test.js` 进行API测试\n   - 检查核心功能组件（ScriptBlockPanel, ShotLibrary, SimpleTimeline）是否正常工作\n\n3. **开发进度评估**：\n   - 对照 .qoder/quests/director-storyboard-validation-mvp.md 中的需求\n   - 评估各模块完成度\n   - 识别阻塞问题和风险点\n\n4. **问题测试与清理**：\n   - 对发现的问题编写临时测试代码验证\n   - 测试完成后删除所有临时测试文件\n   - 清理 test-browser-profile-* 等测试残留目录\n\n5. **生成评估报告**：\n   - 在 docs/ 目录下创建或更新评估报告\n   - 包含：API状态、MVP完成度、开发进度百分比、问题清单、建议下一步行动\n\n请开始执行评估任务。"
+  }
+}

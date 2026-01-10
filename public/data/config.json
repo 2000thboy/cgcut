@@ -1,0 +1,5 @@
+{
+  "media_server_base_url": "http://localhost:8080/media",
+  "local_cache_path": "./cache",
+  "preview_quality": "medium"
+}

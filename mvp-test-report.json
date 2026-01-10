@@ -1,0 +1,335 @@
+{
+  "timestamp": "2026-01-09T15:55:23.064Z",
+  "summary": {
+    "total": 31,
+    "passed": 30,
+    "failed": 1,
+    "warnings": 0,
+    "skipped": 0
+  },
+  "services": {
+    "clip": {
+      "status": "running",
+      "tests": [
+        {
+          "name": "服务连接测试",
+          "status": "passed",
+          "duration": 18,
+          "data": null
+        },
+        {
+          "name": "CLIP状态端点 (/clip)",
+          "status": "passed",
+          "duration": 3,
+          "data": {
+            "status": "ok",
+            "model": "openai/clip-vit-base-patch32",
+            "device": "cpu",
+            "tags_count": 38,
+            "categories": [
+              "shot_type",
+              "scene",
+              "subject",
+              "action",
+              "emotion",
+              "lighting",
+              "time"
+            ]
+          }
+        },
+        {
+          "name": "CLIP模型加载验证",
+          "status": "passed",
+          "duration": 1,
+          "data": {
+            "model": "openai/clip-vit-base-patch32",
+            "device": "cpu"
+          }
+        },
+        {
+          "name": "扫描端点 (/clip/scan)",
+          "status": "passed",
+          "duration": 2
+        },
+        {
+          "name": "单文件处理端点 (/clip/process)",
+          "status": "passed",
+          "duration": 2
+        },
+        {
+          "name": "文字搜索端点 (/clip/search)",
+          "status": "passed",
+          "duration": 1,
+          "data": {
+            "total": 0
+          }
+        },
+        {
+          "name": "多条件搜索端点 (/clip/search-multi)",
+          "status": "failed",
+          "duration": 1,
+          "message": "HTTP 422"
+        },
+        {
+          "name": "结果保存端点 (/clip/save-results)",
+          "status": "passed",
+          "duration": 2
+        },
+        {
+          "name": "获取结果端点 (/clip/results)",
+          "status": "passed",
+          "duration": 1,
+          "data": {
+            "total": 0
+          }
+        }
+      ],
+      "details": {
+        "model": "openai/clip-vit-base-patch32",
+        "device": "cpu"
+      }
+    },
+    "vlm": {
+      "status": "running",
+      "tests": [
+        {
+          "name": "服务连接测试",
+          "status": "passed",
+          "duration": 3,
+          "data": {
+            "service": "MiniMind-V 视频描述服务",
+            "version": "1.0.0",
+            "status": "running",
+            "device": "cpu",
+            "endpoints": {
+              "/vlm": "服务状态",
+              "/vlm/describe": "生成单个视频描述",
+              "/vlm/batch": "批量生成描述"
+            },
+            "model": "CLIP-based"
+          }
+        },
+        {
+          "name": "VLM状态端点 (/vlm)",
+          "status": "passed",
+          "duration": 2,
+          "data": {
+            "status": "ok",
+            "model": "CLIP-based",
+            "device": "cpu",
+            "model_loaded": true
+          }
+        },
+        {
+          "name": "描述生成端点 (/vlm/describe)",
+          "status": "passed",
+          "duration": 2
+        },
+        {
+          "name": "批量处理端点 (/vlm/batch)",
+          "status": "passed",
+          "duration": 2
+        }
+      ],
+      "details": {
+        "service": "MiniMind-V 视频描述服务",
+        "version": "1.0.0",
+        "status": "running",
+        "device": "cpu",
+        "endpoints": {
+          "/vlm": "服务状态",
+          "/vlm/describe": "生成单个视频描述",
+          "/vlm/batch": "批量生成描述"
+        },
+        "model": "CLIP-based"
+      }
+    },
+    "llm": {
+      "status": "working",
+      "tests": [
+        {
+          "name": "智谱AI API连接",
+          "status": "passed",
+          "duration": 531,
+          "data": {
+            "response": "你好！很高兴见到你！有什么我可以帮助你的"
+          }
+        },
+        {
+          "name": "剧本分镜拆解功能",
+          "status": "passed",
+          "duration": 8597,
+          "data": {
+            "preview": "```json\n{\n  \"scenes\": [\n    {\n      \"id\": \"scene_1\",\n      \"name\": \"办公室紧张时刻\",\n      \"blocks\": [\n        {\n          \"id\": \"block_1\",\n          \"text\": \"[中景] 王晓坐在办公桌前，眼神紧张地看着电脑屏幕，手指在键盘上快速敲打\",\n          \"emotion\": \"紧张\",\n          \"expected_duration\": 4.0\n        },\n        {\n          \"id\": \"block_2\","
+          }
+        },
+        {
+          "name": "JSON格式输出能力",
+          "status": "passed",
+          "duration": 2676
+        }
+      ],
+      "details": {
+        "model": "glm-4-plus",
+        "response": "你好！很高兴见到你！有什么我可以帮助你的",
+        "scriptAnalysis": "working"
+      }
+    },
+    "frontend": {
+      "status": "analyzed",
+      "tests": [
+        {
+          "name": "llmService.ts - 真实API调用",
+          "status": "passed",
+          "duration": 0,
+          "data": {
+            "hasRealAPI": true,
+            "noMock": true,
+            "hasErrorHandling": true,
+            "hasJSONParsing": true
+          }
+        },
+        {
+          "name": "clipService.ts - 真实API调用",
+          "status": "passed",
+          "duration": 0,
+          "data": {
+            "hasRealAPI": true,
+            "defaultNoMock": true,
+            "hasSearchAPI": false,
+            "hasErrorHandling": true
+          }
+        },
+        {
+          "name": "taggingService.ts - 双服务集成",
+          "status": "passed",
+          "duration": 0,
+          "data": {
+            "hasCLIP": true,
+            "hasVLM": true,
+            "hasBothServices": true
+          }
+        },
+        {
+          "name": "searchService.ts - 搜索功能",
+          "status": "passed",
+          "duration": 0,
+          "data": {
+            "hasTagSearch": true,
+            "hasSemanticSearch": true,
+            "hasClipSearch": true,
+            "hasSmartSearch": true
+          }
+        },
+        {
+          "name": "数据模型定义完整性",
+          "status": "passed",
+          "duration": 0,
+          "data": {
+            "types": 7
+          }
+        },
+        {
+          "name": "Store状态管理",
+          "status": "passed",
+          "duration": 0,
+          "data": {
+            "actions": 4
+          }
+        },
+        {
+          "name": "App.tsx服务集成",
+          "status": "passed",
+          "duration": 0,
+          "data": {
+            "hasLLMService": true,
+            "hasCLIPService": true,
+            "hasAnalyzeScript": true
+          }
+        },
+        {
+          "name": "MVP功能: 剧本输入",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "name": "MVP功能: LLM分镜拆解",
+          "status": "passed",
+          "duration": 1
+        },
+        {
+          "name": "MVP功能: 素材库管理",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "name": "MVP功能: CLIP打标",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "name": "MVP功能: VLM描述",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "name": "MVP功能: 素材搜索",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "name": "MVP功能: 拖拽排序",
+          "status": "passed",
+          "duration": 0
+        },
+        {
+          "name": "MVP功能: 时间轴预览",
+          "status": "passed",
+          "duration": 0
+        }
+      ],
+      "details": {}
+    }
+  },
+  "mvpChecklist": [
+    {
+      "feature": "CLIP服务",
+      "status": "PASS",
+      "details": "openai/clip-vit-base-patch32 on cpu",
+      "timestamp": "2026-01-09T15:55:23.109Z"
+    },
+    {
+      "feature": "VLM服务",
+      "status": "PASS",
+      "details": "CLIP-based on cpu",
+      "timestamp": "2026-01-09T15:55:23.118Z"
+    },
+    {
+      "feature": "LLM服务",
+      "status": "PASS",
+      "details": "glm-4-plus - 剧本分析功能正常",
+      "timestamp": "2026-01-09T15:55:34.923Z"
+    },
+    {
+      "feature": "前端服务代码",
+      "status": "PASS",
+      "details": "所有服务文件结构完整",
+      "timestamp": "2026-01-09T15:55:34.924Z"
+    },
+    {
+      "feature": "数据模型",
+      "status": "PASS",
+      "details": "类型定义和状态管理完整",
+      "timestamp": "2026-01-09T15:55:34.925Z"
+    }
+  ],
+  "issues": [
+    {
+      "type": "error",
+      "category": "clip",
+      "test": "多条件搜索端点 (/clip/search-multi)",
+      "message": "HTTP 422"
+    }
+  ],
+  "recommendations": []
+}

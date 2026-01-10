@@ -1,0 +1,37 @@
+[
+  {
+    "id": "sb_001",
+    "scene": "INT. 卧室 - 夜晚",
+    "text": "主角躺在床上，辗转反侧。窗外传来微弱的雨声。",
+    "emotion": "焦虑",
+    "expected_duration": 8.0
+  },
+  {
+    "id": "sb_002",
+    "scene": "INT. 卧室 - 夜晚",
+    "text": "突然，门外传来脚步声，越来越近。",
+    "emotion": "紧张",
+    "expected_duration": 5.0
+  },
+  {
+    "id": "sb_003",
+    "scene": "INT. 走廊 - 夜晚",
+    "text": "门把手缓慢转动，发出轻微的吱呀声。",
+    "emotion": "紧张",
+    "expected_duration": 6.0
+  },
+  {
+    "id": "sb_004",
+    "scene": "INT. 卧室 - 夜晚",
+    "text": "主角屏住呼吸，眼睛紧盯着房门。",
+    "emotion": "恐惧",
+    "expected_duration": 4.0
+  },
+  {
+    "id": "sb_005",
+    "scene": "INT. 卧室 - 夜晚",
+    "text": "门突然打开，是妈妈端着一杯热牛奶。",
+    "emotion": "释然",
+    "expected_duration": 3.0
+  }
+]

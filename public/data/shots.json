@@ -1,0 +1,82 @@
+[
+  {
+    "id": "shot_001",
+    "label": "特写 - 眼睛睁开",
+    "emotion": "焦虑",
+    "duration": 3.0,
+    "file_path": "",
+    "status": "pending"
+  },
+  {
+    "id": "shot_002",
+    "label": "全景 - 卧室环境",
+    "emotion": "平静",
+    "duration": 5.0,
+    "file_path": "",
+    "status": "pending"
+  },
+  {
+    "id": "shot_003",
+    "label": "特写 - 门把手",
+    "emotion": "紧张",
+    "duration": 2.0,
+    "file_path": "",
+    "status": "pending"
+  },
+  {
+    "id": "shot_004",
+    "label": "中景 - 手部颗抖",
+    "emotion": "焦虑",
+    "duration": 4.0,
+    "file_path": "",
+    "status": "pending"
+  },
+  {
+    "id": "shot_005",
+    "label": "特写 - 脚步特写",
+    "emotion": "紧张",
+    "duration": 3.5,
+    "file_path": "",
+    "status": "pending"
+  },
+  {
+    "id": "shot_006",
+    "label": "近景 - 门缝光线",
+    "emotion": "紧张",
+    "duration": 4.5,
+    "file_path": "",
+    "status": "pending"
+  },
+  {
+    "id": "shot_007",
+    "label": "特写 - 主角侧脸",
+    "emotion": "恐惧",
+    "duration": 3.0,
+    "file_path": "",
+    "status": "pending"
+  },
+  {
+    "id": "shot_008",
+    "label": "中景 - 妈妈进门",
+    "emotion": "释然",
+    "duration": 2.5,
+    "file_path": "",
+    "status": "pending"
+  },
+  {
+    "id": "shot_009",
+    "label": "近景 - 热牛奶特写",
+    "emotion": "平静",
+    "duration": 2.0,
+    "file_path": "",
+    "status": "pending"
+  },
+  {
+    "id": "shot_010",
+    "label": "全景 - 床上翻身",
+    "emotion": "焦虑",
+    "duration": 6.0,
+    "file_path": "",
+    "status": "pending"
+  }
+]
