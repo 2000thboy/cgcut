@@ -27,6 +27,15 @@
 
 ### 1. 环境准备
 
+#### 方法一：使用 PowerShell 一键安装（推荐）
+
+```powershell
+# 在 PowerShell 中运行
+.\setup-environment.ps1
+```
+
+#### 方法二：手动安装依赖
+
 ```bash
 # 安装 Node.js 依赖
 npm install
