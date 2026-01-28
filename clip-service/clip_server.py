@@ -3,8 +3,8 @@ CLIP视频打标服务
 用于视频素材的自动标签生成、场景描述、情绪识别
 
 打标原理：
-1. 使用OpenAI CLIP模型（ViT-B/32）
-2. 将视频关键帧编码为512维向量
+1. 使用Chinese-CLIP模型（ViT-B/16）
+2. 将视频关键帧编码为向量
 3. 将预定义标签文本也编码为向量
 4. 计算余弦相似度，选择最匹配的标签
 
@@ -17,6 +17,8 @@ CLIP视频打标服务
 """
 
 import os
+# Configure HF mirror
+os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
 import json
 import logging
 from typing import List, Dict, Optional
@@ -32,7 +34,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from transformers import CLIPProcessor, CLIPModel
+from transformers import ChineseCLIPProcessor, ChineseCLIPModel
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -58,10 +60,10 @@ app.add_middleware(
 # 预定义标签库
 # ============================================
 PREDEFINED_TAGS = {
-    "shot_type": ["特写镜头", "近景镜头", "中景镜头", "全景镜头", "远景镜头"],
-    "scene": ["室内场景", "室外场景", "街道", "房间", "自然风景", "办公室", "城市"],
+    "shot_type": ["特写镜头", "近景镜头", "中景镜头", "全景镜头", "远景镜头", "推镜头", "拉镜头", "跟拍镜头", "摇镜头"],
+    "scene": ["室内场景", "室外场景", "街道", "房间", "自然风景", "办公室", "城市", "动漫场景", "CG场景", "实拍场景"],
     "subject": ["人物", "面部特写", "手部特写", "群体场景", "无人场景"],
-    "action": ["行走", "奔跑", "静坐", "对话交流", "工作", "休息"],
+    "action": ["行走", "奔跑", "静坐", "对话交流", "工作", "休息", "战斗", "追逐", "爆炸", "对峙", "格斗"],
     "emotion": ["紧张氛围", "平静氛围", "激动氛围", "悲伤氛围", "快乐氛围", "恐惧氛围", "中性氛围"],
     "lighting": ["明亮光线", "昏暗光线", "自然光", "人工光"],
     "time": ["白天", "夜晚", "黄昏", "清晨"],
@@ -76,7 +78,7 @@ for category, tags in PREDEFINED_TAGS.items():
 # CLIP模型管理
 # ============================================
 class CLIPModelManager:
-    def __init__(self, model_name: str = "openai/clip-vit-base-patch32"):
+    def __init__(self, model_name: str = "OFA-Sys/chinese-clip-vit-base-patch16"):
         self.model_name = model_name
         self.model = None
         self.processor = None
@@ -91,23 +93,38 @@ class CLIPModelManager:
         logger.info(f"加载CLIP模型: {self.model_name}")
         logger.info(f"使用设备: {self.device}")
         
-        self.processor = CLIPProcessor.from_pretrained(self.model_name)
-        self.model = CLIPModel.from_pretrained(self.model_name).to(self.device)
+        self.processor = ChineseCLIPProcessor.from_pretrained(self.model_name)
+        self.model = ChineseCLIPModel.from_pretrained(self.model_name).to(self.device)
         self.model.eval()
         
         # 预计算标签embeddings
         self._precompute_tag_embeddings()
         
         logger.info("✅ CLIP模型加载完成")
+
+    def _get_text_features(self, texts: List[str]) -> torch.Tensor:
+        inputs = self.processor(text=texts, return_tensors="pt", padding=True)
+        inputs = {k: v.to(self.device) for k, v in inputs.items()}
+        text_inputs = {k: inputs[k] for k in ("input_ids", "attention_mask", "token_type_ids") if k in inputs}
+        text_outputs = self.model.text_model(**text_inputs, return_dict=True)
+        pooled_output = getattr(text_outputs, "pooler_output", None)
+        if pooled_output is None:
+            pooled_output = text_outputs.last_hidden_state[:, 0, :]
+        return self.model.text_projection(pooled_output)
+
+    def _get_image_features(self, image: Image.Image) -> torch.Tensor:
+        inputs = self.processor(images=image, return_tensors="pt")
+        pixel_values = inputs["pixel_values"].to(self.device)
+        vision_outputs = self.model.vision_model(pixel_values=pixel_values, return_dict=True)
+        pooled_output = vision_outputs.last_hidden_state[:, 0, :]
+        return self.model.visual_projection(pooled_output)
         
     def _precompute_tag_embeddings(self):
         """预计算所有标签的文本embeddings"""
         logger.info("预计算标签embeddings...")
-        
+
         with torch.no_grad():
-            inputs = self.processor(text=ALL_TAGS, return_tensors="pt", padding=True)
-            inputs = {k: v.to(self.device) for k, v in inputs.items()}
-            text_features = self.model.get_text_features(**inputs)
+            text_features = self._get_text_features(ALL_TAGS)
             self.tag_embeddings = text_features / text_features.norm(dim=-1, keepdim=True)
             
         logger.info(f"✅ 预计算完成, 标签数: {len(ALL_TAGS)}")
@@ -115,18 +132,14 @@ class CLIPModelManager:
     def encode_image(self, image: Image.Image) -> np.ndarray:
         """编码图像为CLIP向量"""
         with torch.no_grad():
-            inputs = self.processor(images=image, return_tensors="pt")
-            inputs = {k: v.to(self.device) for k, v in inputs.items()}
-            image_features = self.model.get_image_features(**inputs)
+            image_features = self._get_image_features(image)
             image_features = image_features / image_features.norm(dim=-1, keepdim=True)
             return image_features.cpu().numpy()[0]
             
     def get_tags(self, image: Image.Image, top_k: int = 5) -> List[Dict]:
         """获取图像的标签（基于相似度）"""
         with torch.no_grad():
-            inputs = self.processor(images=image, return_tensors="pt")
-            inputs = {k: v.to(self.device) for k, v in inputs.items()}
-            image_features = self.model.get_image_features(**inputs)
+            image_features = self._get_image_features(image)
             image_features = image_features / image_features.norm(dim=-1, keepdim=True)
             
             # 计算相似度
@@ -146,17 +159,13 @@ class CLIPModelManager:
     def get_tags_by_category(self, image: Image.Image) -> Dict[str, str]:
         """按类别获取最佳标签"""
         with torch.no_grad():
-            inputs = self.processor(images=image, return_tensors="pt")
-            inputs = {k: v.to(self.device) for k, v in inputs.items()}
-            image_features = self.model.get_image_features(**inputs)
+            image_features = self._get_image_features(image)
             image_features = image_features / image_features.norm(dim=-1, keepdim=True)
-            
+
             results = {}
             for category, tags in PREDEFINED_TAGS.items():
                 # 计算该类别标签的embeddings
-                cat_inputs = self.processor(text=tags, return_tensors="pt", padding=True)
-                cat_inputs = {k: v.to(self.device) for k, v in cat_inputs.items()}
-                cat_features = self.model.get_text_features(**cat_inputs)
+                cat_features = self._get_text_features(tags)
                 cat_features = cat_features / cat_features.norm(dim=-1, keepdim=True)
                 
                 # 计算相似度
@@ -186,16 +195,12 @@ class CLIPModelManager:
     def detect_emotions(self, image: Image.Image) -> List[str]:
         """检测情绪"""
         emotion_tags = PREDEFINED_TAGS["emotion"]
-        
+
         with torch.no_grad():
-            inputs = self.processor(images=image, return_tensors="pt")
-            inputs = {k: v.to(self.device) for k, v in inputs.items()}
-            image_features = self.model.get_image_features(**inputs)
+            image_features = self._get_image_features(image)
             image_features = image_features / image_features.norm(dim=-1, keepdim=True)
-            
-            em_inputs = self.processor(text=emotion_tags, return_tensors="pt", padding=True)
-            em_inputs = {k: v.to(self.device) for k, v in em_inputs.items()}
-            em_features = self.model.get_text_features(**em_inputs)
+
+            em_features = self._get_text_features(emotion_tags)
             em_features = em_features / em_features.norm(dim=-1, keepdim=True)
             
             similarities = (image_features @ em_features.T).squeeze(0)
@@ -211,9 +216,7 @@ class CLIPModelManager:
     def encode_text(self, text: str) -> np.ndarray:
         """编码文本为CLIP向量"""
         with torch.no_grad():
-            inputs = self.processor(text=[text], return_tensors="pt", padding=True)
-            inputs = {k: v.to(self.device) for k, v in inputs.items()}
-            text_features = self.model.get_text_features(**inputs)
+            text_features = self._get_text_features([text])
             text_features = text_features / text_features.norm(dim=-1, keepdim=True)
             return text_features.cpu().numpy()[0]
 
@@ -236,13 +239,13 @@ class ScanRequest(BaseModel):
     file_patterns: List[str] = ["*.mp4", "*.mov", "*.avi"]
     skip_processed: bool = True
     extract_keyframes: bool = True
-    model_version: str = "ViT-B/32"
+    model_version: str = "Chinese-CLIP ViT-B/16"
     batch_size: int = 5
 
 class ProcessRequest(BaseModel):
     file_path: str
     extract_keyframes: bool = True
-    model_version: str = "ViT-B/32"
+    model_version: str = "Chinese-CLIP ViT-B/16"
 
 class ListRequest(BaseModel):
     directory: str
@@ -254,7 +257,8 @@ class SearchRequest(BaseModel):
     """文字搜索请求"""
     query: str                          # 搜索文本，如"一个人在街上行走"
     top_k: int = 10                     # 返回结果数量
-    threshold: float = 0.0             # 相似度阈值，低于此值不返回
+    # Chinese-CLIP 相似度整体偏低，默认放宽阈值
+    threshold: float = 0.02             # 相似度阈值，低于此值不返回
     filter_tags: Optional[List[str]] = None  # 可选：按标签过滤
 
 class CLIPMetadata(BaseModel):
@@ -269,7 +273,7 @@ class CLIPMetadata(BaseModel):
 # ============================================
 # 视频处理工具
 # ============================================
-def extract_keyframes_from_video(video_path: str, num_frames: int = 3) -> List[Image.Image]:
+def extract_keyframes_from_video(video_path: str, num_frames: int = 5) -> List[Image.Image]:
     """从视频中提取关键帧"""
     cap = cv2.VideoCapture(video_path)
     
@@ -284,17 +288,34 @@ def extract_keyframes_from_video(video_path: str, num_frames: int = 3) -> List[I
     # 均匀采样帧
     frame_indices = np.linspace(0, total_frames - 1, num_frames, dtype=int)
     
+    all_frames = []
     frames = []
+    last_hist = None
     for idx in frame_indices:
         cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
         ret, frame = cap.read()
         if ret:
             # BGR转RGB
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            frames.append(Image.fromarray(frame_rgb))
+            image = Image.fromarray(frame_rgb)
+            all_frames.append(image)
+
+            # 镜头变化检测（基于灰度直方图相似度）
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            hist = cv2.calcHist([gray], [0], None, [64], [0, 256])
+            cv2.normalize(hist, hist)
+
+            if last_hist is None:
+                frames.append(image)
+                last_hist = hist
+            else:
+                similarity = cv2.compareHist(last_hist, hist, cv2.HISTCMP_CORREL)
+                if similarity < 0.9:
+                    frames.append(image)
+                    last_hist = hist
     
     cap.release()
-    return frames
+    return frames if frames else all_frames
 
 def get_video_files(directory: str, patterns: List[str]) -> List[str]:
     """获取目录下的视频文件"""
@@ -491,22 +512,33 @@ async def search_by_text(request: SearchRequest):
     
     logger.info(f"搜索完成: 找到 {len(top_matches)} 个匹配结果")
     
+    similarities = [match["similarity"] for match in top_matches]
+    min_similarity = min(similarities) if similarities else 0.0
+    avg_similarity = (sum(similarities) / len(similarities)) if similarities else 0.0
+
     return {
         "status": "success",
         "query": request.query,
         "results": top_matches,
         "total": len(top_matches),
-        "searched": len(all_results)
+        "searched": len(all_results),
+        "min_similarity": round(min_similarity, 4),
+        "avg_similarity": round(avg_similarity, 4)
     }
 
 @app.get("/clip/search")
-async def search_by_text_get(query: str, top_k: int = 10, threshold: float = 0.0):
+async def search_by_text_get(query: str, top_k: int = 10, threshold: float = 0.3):
     """GET方式的文字搜索（便于浏览器测试）"""
     request = SearchRequest(query=query, top_k=top_k, threshold=threshold)
     return await search_by_text(request)
 
+class MultiSearchRequest(BaseModel):
+    """多条件搜索请求"""
+    queries: List[str]
+    top_k: int = 5
+
 @app.post("/clip/search-multi")
-async def search_multi_query(queries: List[str], top_k: int = 5):
+async def search_multi_query(request: MultiSearchRequest):
     """
     多条件组合搜索
     
@@ -514,6 +546,8 @@ async def search_multi_query(queries: List[str], top_k: int = 5):
     
     示例：queries=["室内场景", "两个人对话", "平静氛围"]
     """
+    queries = request.queries
+    top_k = request.top_k
     logger.info(f"多条件搜索: {queries}")
     
     clip_manager.load_model()
@@ -631,7 +665,7 @@ async def scan_directory(request: ScanRequest):
     for video_path in video_files:
         try:
             # 提取关键帧
-            frames = extract_keyframes_from_video(video_path, num_frames=3)
+            frames = extract_keyframes_from_video(video_path, num_frames=5)
             
             if not frames:
                 failed_count += 1
@@ -708,7 +742,7 @@ async def process_single_file(request: ProcessRequest):
     
     try:
         # 提取关键帧
-        frames = extract_keyframes_from_video(request.file_path, num_frames=3)
+        frames = extract_keyframes_from_video(request.file_path, num_frames=5)
         
         if not frames:
             raise HTTPException(status_code=400, detail="无法从视频提取帧")

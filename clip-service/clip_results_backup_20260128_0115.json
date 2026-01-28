@@ -1,0 +1,72 @@
+[
+  {
+    "filePath": "E:\\CGCUT\\test-assets\\test01.mp4",
+    "shotId": "shot_74958",
+    "clipMetadata": {},
+    "status": "error",
+    "error": "'NoneType' object has no attribute 'T'"
+  },
+  {
+    "filePath": "E:\\CGCUT\\test-assets\\test02.mp4",
+    "shotId": "shot_15634",
+    "clipMetadata": {},
+    "status": "error",
+    "error": "'NoneType' object has no attribute 'T'"
+  },
+  {
+    "filePath": "E:\\CGCUT\\test-assets\\test03.mp4",
+    "shotId": "shot_57495",
+    "clipMetadata": {},
+    "status": "error",
+    "error": "'NoneType' object has no attribute 'T'"
+  },
+  {
+    "filePath": "E:\\CGCUT\\test-assets\\test04.mp4",
+    "shotId": "shot_2467",
+    "clipMetadata": {},
+    "status": "error",
+    "error": "'NoneType' object has no attribute 'T'"
+  },
+  {
+    "filePath": "E:\\CGCUT\\test-assets\\test05.mp4",
+    "shotId": "shot_99083",
+    "clipMetadata": {},
+    "status": "error",
+    "error": "'NoneType' object has no attribute 'T'"
+  },
+  {
+    "filePath": "E:\\CGCUT\\test-assets\\test06.mp4",
+    "shotId": "shot_80715",
+    "clipMetadata": {},
+    "status": "error",
+    "error": "'NoneType' object has no attribute 'T'"
+  },
+  {
+    "filePath": "E:\\CGCUT\\test-assets\\test07.mp4",
+    "shotId": "shot_92061",
+    "clipMetadata": {},
+    "status": "error",
+    "error": "'NoneType' object has no attribute 'T'"
+  },
+  {
+    "filePath": "E:\\CGCUT\\test-assets\\test08.mp4",
+    "shotId": "shot_47263",
+    "clipMetadata": {},
+    "status": "error",
+    "error": "'NoneType' object has no attribute 'T'"
+  },
+  {
+    "filePath": "E:\\CGCUT\\test-assets\\test09.mp4",
+    "shotId": "shot_30474",
+    "clipMetadata": {},
+    "status": "error",
+    "error": "'NoneType' object has no attribute 'T'"
+  },
+  {
+    "filePath": "E:\\CGCUT\\test-assets\\test10.mp4",
+    "shotId": "shot_79211",
+    "clipMetadata": {},
+    "status": "error",
+    "error": "'NoneType' object has no attribute 'T'"
+  }
+]

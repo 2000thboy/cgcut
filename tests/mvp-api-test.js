@@ -81,7 +81,7 @@ function makeRequest(url, options = {}) {
   return new Promise((resolve, reject) => {
     const urlObj = new URL(url);
     const protocol = urlObj.protocol === 'https:' ? https : http;
-    
+
     const reqOptions = {
       hostname: urlObj.hostname,
       port: urlObj.port || (urlObj.protocol === 'https:' ? 443 : 80),
@@ -113,11 +113,11 @@ function makeRequest(url, options = {}) {
 async function runTest(category, name, testFn) {
   testResults.summary.total++;
   const startTime = Date.now();
-  
+
   try {
     const result = await testFn();
     const duration = Date.now() - startTime;
-    
+
     if (result.passed) {
       testResults.summary.passed++;
       testResults.services[category].tests.push({ name, status: 'passed', duration, data: result.data });
@@ -166,7 +166,7 @@ async function testCLIPService() {
       const res = await makeRequest(`${CONFIG.CLIP_ENDPOINT}/`);
       if (res.status === 200) {
         testResults.services.clip.status = 'running';
-        testResults.services.clip.details = res.data;
+        testResults.services.clip.details = res.data || {};
         return { passed: true, data: res.data };
       }
       return { passed: false, message: `HTTP ${res.status}` };
@@ -264,7 +264,7 @@ async function testCLIPService() {
     return { passed: false, message: `HTTP ${res.status}` };
   });
 
-  addMVPCheck('CLIP服务', testResults.services.clip.status === 'running' ? 'PASS' : 'FAIL', 
+  addMVPCheck('CLIP服务', testResults.services.clip.status === 'running' ? 'PASS' : 'FAIL',
     `${testResults.services.clip.details.model || 'unknown'} on ${testResults.services.clip.details.device || 'unknown'}`);
 }
 
@@ -282,7 +282,7 @@ async function testVLMService() {
       const res = await makeRequest(`${CONFIG.VLM_ENDPOINT}/`);
       if (res.status === 200) {
         testResults.services.vlm.status = 'running';
-        testResults.services.vlm.details = res.data;
+        testResults.services.vlm.details = res.data || {};
         return { passed: true, data: res.data };
       }
       return { passed: false, message: `HTTP ${res.status}` };
@@ -302,6 +302,7 @@ async function testVLMService() {
   await runTest('vlm', 'VLM状态端点 (/vlm)', async () => {
     const res = await makeRequest(`${CONFIG.VLM_ENDPOINT}/vlm`);
     if (res.status === 200 && res.data?.status === 'ok') {
+      if (!testResults.services.vlm.details) testResults.services.vlm.details = {};
       testResults.services.vlm.details.model = res.data.model;
       testResults.services.vlm.details.device = res.data.device;
       return { passed: true, data: res.data };
@@ -330,7 +331,7 @@ async function testVLMService() {
   });
 
   addMVPCheck('VLM服务', testResults.services.vlm.status === 'running' ? 'PASS' : 'FAIL',
-    `${testResults.services.vlm.details.model || 'unknown'} on ${testResults.services.vlm.details.device || 'unknown'}`);
+    `${testResults.services.vlm.details?.model || 'unknown'} on ${testResults.services.vlm.details?.device || 'unknown'}`);
 }
 
 // ============================================
@@ -350,7 +351,7 @@ async function testLLMService() {
         body: { model: CONFIG.ZHIPU_MODEL, messages: [{ role: 'user', content: '你好' }], max_tokens: 10 },
         timeout: CONFIG.LLM_TIMEOUT,
       });
-      
+
       if (res.status === 200 && res.data?.choices) {
         testResults.services.llm.status = 'working';
         testResults.services.llm.details = { model: CONFIG.ZHIPU_MODEL, response: res.data.choices[0]?.message?.content };
@@ -396,15 +397,15 @@ async function testLLMService() {
         },
         timeout: CONFIG.LLM_TIMEOUT,
       });
-      
+
       if (res.status === 200 && res.data?.choices?.[0]?.message?.content) {
         const content = res.data.choices[0].message.content;
-        
+
         // 验证返回内容
         const hasScenes = content.includes('scene') || content.includes('镜头');
         const hasBlocks = content.includes('block') || content.includes('[');
         const hasJSON = content.includes('{') && content.includes('}');
-        
+
         if (hasScenes && hasBlocks && hasJSON) {
           testResults.services.llm.details.scriptAnalysis = 'working';
           return { passed: true, data: { preview: content.substring(0, 300) } };
@@ -430,7 +431,7 @@ async function testLLMService() {
         },
         timeout: CONFIG.LLM_TIMEOUT,
       });
-      
+
       if (res.status === 200) {
         const content = res.data?.choices?.[0]?.message?.content || '';
         try {
@@ -440,7 +441,7 @@ async function testLLMService() {
             JSON.parse(jsonMatch[0]);
             return { passed: true };
           }
-        } catch {}
+        } catch { }
         return { warning: true, message: 'JSON解析可能需要额外处理' };
       }
       return { passed: false, message: `HTTP ${res.status}` };
@@ -463,14 +464,14 @@ async function analyzeFrontendCode() {
   // 4.1 llmService.ts 分析
   await runTest('frontend', 'llmService.ts - 真实API调用', async () => {
     const content = fs.readFileSync('src/services/llmService.ts', 'utf-8');
-    
+
     const checks = {
       hasRealAPI: content.includes('fetch(') && (content.includes('bigmodel.cn') || content.includes('nvidia.com')),
       noMock: !content.includes('mockResponse') && !content.includes('MOCK_'),
       hasErrorHandling: content.includes('catch') && content.includes('throw'),
       hasJSONParsing: content.includes('robustJSONParse') || content.includes('JSON.parse'),
     };
-    
+
     if (checks.hasRealAPI && checks.noMock) {
       return { passed: true, data: checks };
     }
@@ -482,14 +483,14 @@ async function analyzeFrontendCode() {
   // 4.2 clipService.ts 分析
   await runTest('frontend', 'clipService.ts - 真实API调用', async () => {
     const content = fs.readFileSync('src/services/clipService.ts', 'utf-8');
-    
+
     const checks = {
       hasRealAPI: content.includes('fetch(') && content.includes('localhost:8000'),
       defaultNoMock: content.includes('useMock: config.useMock ?? false'),
       hasSearchAPI: content.includes('/clip/search'),
       hasErrorHandling: content.includes('throw new Error'),
     };
-    
+
     if (checks.hasRealAPI && checks.defaultNoMock) {
       return { passed: true, data: checks };
     }
@@ -499,13 +500,13 @@ async function analyzeFrontendCode() {
   // 4.3 taggingService.ts 分析
   await runTest('frontend', 'taggingService.ts - 双服务集成', async () => {
     const content = fs.readFileSync('src/services/taggingService.ts', 'utf-8');
-    
+
     const checks = {
       hasCLIP: content.includes('localhost:8000'),
       hasVLM: content.includes('localhost:8001'),
       hasBothServices: content.includes('clipEndpoint') && content.includes('vlmEndpoint'),
     };
-    
+
     if (checks.hasCLIP && checks.hasVLM) {
       return { passed: true, data: checks };
     }
@@ -515,14 +516,14 @@ async function analyzeFrontendCode() {
   // 4.4 searchService.ts 分析
   await runTest('frontend', 'searchService.ts - 搜索功能', async () => {
     const content = fs.readFileSync('src/services/searchService.ts', 'utf-8');
-    
+
     const checks = {
       hasTagSearch: content.includes('searchByTags'),
       hasSemanticSearch: content.includes('searchBySemantic'),
       hasClipSearch: content.includes('searchByClipVector'),
       hasSmartSearch: content.includes('smartSearch'),
     };
-    
+
     const passCount = Object.values(checks).filter(Boolean).length;
     if (passCount >= 3) {
       return { passed: true, data: checks };
@@ -544,11 +545,11 @@ async function checkDataModels() {
   // 5.1 数据模型定义
   await runTest('frontend', '数据模型定义完整性', async () => {
     const content = fs.readFileSync('src/types/DataModel.ts', 'utf-8');
-    
-    const requiredTypes = ['CLIPMetadata', 'VLMMetadata', 'Shot', 'ScriptBlock', 'Clip', 
-                          'LLMScriptAnalysisRequest', 'LLMScriptAnalysisResponse'];
+
+    const requiredTypes = ['CLIPMetadata', 'VLMMetadata', 'Shot', 'ScriptBlock', 'Clip',
+      'LLMScriptAnalysisRequest', 'LLMScriptAnalysisResponse'];
     const missing = requiredTypes.filter(t => !content.includes(t));
-    
+
     if (missing.length === 0) return { passed: true, data: { types: requiredTypes.length } };
     return { passed: false, message: `缺少类型: ${missing.join(', ')}` };
   });
@@ -556,10 +557,10 @@ async function checkDataModels() {
   // 5.2 Store状态管理
   await runTest('frontend', 'Store状态管理', async () => {
     const content = fs.readFileSync('src/store/appStore.ts', 'utf-8');
-    
+
     const requiredActions = ['setScriptBlocks', 'setShots', 'setClips', 'addClip'];
     const missing = requiredActions.filter(a => !content.includes(a));
-    
+
     if (missing.length === 0) return { passed: true, data: { actions: requiredActions.length } };
     return { passed: false, message: `缺少Action: ${missing.join(', ')}` };
   });
@@ -567,13 +568,13 @@ async function checkDataModels() {
   // 5.3 App.tsx集成
   await runTest('frontend', 'App.tsx服务集成', async () => {
     const content = fs.readFileSync('src/App.tsx', 'utf-8');
-    
+
     const checks = {
       hasLLMService: content.includes('llmService'),
       hasCLIPService: content.includes('clipService'),
       hasAnalyzeScript: content.includes('analyzeScript'),
     };
-    
+
     const passCount = Object.values(checks).filter(Boolean).length;
     if (passCount >= 2) return { passed: true, data: checks };
     return { warning: true, message: '服务集成可能不完整' };
@@ -637,7 +638,7 @@ function generateReport() {
   console.log('\n🔧 服务状态:');
   for (const [name, service] of Object.entries(testResults.services)) {
     const status = service.status;
-    const statusIcon = status === 'working' || status === 'running' || status === 'analyzed' 
+    const statusIcon = status === 'working' || status === 'running' || status === 'analyzed'
       ? '🟢' : status === 'offline' || status === 'error' ? '🔴' : '🟡';
     console.log(`   ${statusIcon} ${name.toUpperCase()}: ${status}`);
     if (service.details?.model) console.log(`      模型: ${service.details.model}`);
@@ -684,7 +685,7 @@ function generateReport() {
 
 function generateMarkdownReport() {
   const passRate = ((testResults.summary.passed / testResults.summary.total) * 100).toFixed(1);
-  
+
   let md = `# cgcut MVP API 测试报告
 
 **测试时间**: ${testResults.timestamp}
@@ -706,7 +707,7 @@ function generateMarkdownReport() {
 `;
 
   for (const [name, service] of Object.entries(testResults.services)) {
-    const statusIcon = service.status === 'working' || service.status === 'running' || service.status === 'analyzed' 
+    const statusIcon = service.status === 'working' || service.status === 'running' || service.status === 'analyzed'
       ? '🟢' : service.status === 'offline' || service.status === 'error' ? '🔴' : '🟡';
     const details = service.details?.model ? `${service.details.model} (${service.details.device || 'N/A'})` : '-';
     md += `| ${name.toUpperCase()} | ${statusIcon} ${service.status} | ${details} |\n`;

@@ -1,0 +1,254 @@
+{
+  "timestamp": "2026-01-28T15:39:13.948Z",
+  "tests": [
+    {
+      "name": "页面加载",
+      "status": "PASS",
+      "screenshot": "E:\\CGCUT\\tests\\screenshots\\01_initial_load.png"
+    },
+    {
+      "name": "UI组件检查",
+      "status": "PASS",
+      "details": {
+        "videoPreview": true,
+        "timeline": true,
+        "videoElements": 0
+      }
+    },
+    {
+      "name": "Clips状态检查",
+      "status": "PASS",
+      "details": {
+        "clipCount": 7,
+        "placeholders": 7,
+        "emptyTimelineMessage": false,
+        "materialNotReady": true
+      }
+    },
+    {
+      "name": "视频元素检查",
+      "status": "WARNING",
+      "details": {
+        "message": "没有找到任何视频元素"
+      }
+    },
+    {
+      "name": "Store状态",
+      "status": "INFO",
+      "details": {
+        "timelineHasContent": false,
+        "clipCount": 7,
+        "hasVideoElements": false
+      }
+    },
+    {
+      "name": "网络请求",
+      "status": "INFO",
+      "details": {
+        "videoRequests": []
+      }
+    }
+  ],
+  "consoleLogs": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting...",
+      "location": {
+        "url": "http://localhost:5173/@vite/client",
+        "lineNumber": 494,
+        "columnNumber": 8
+      }
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected.",
+      "location": {
+        "url": "http://localhost:5173/@vite/client",
+        "lineNumber": 617,
+        "columnNumber": 14
+      }
+    },
+    {
+      "type": "info",
+      "text": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold",
+      "location": {
+        "url": "http://localhost:5173/node_modules/.vite/deps/chunk-XPR23Y44.js?v=512befc3",
+        "lineNumber": 21548,
+        "columnNumber": 24
+      }
+    },
+    {
+      "type": "log",
+      "text": "ScriptBlockPanel - scriptBlocks: 0",
+      "location": {
+        "url": "http://localhost:5173/src/components/ScriptBlockPanel.tsx",
+        "lineNumber": 39,
+        "columnNumber": 12
+      }
+    },
+    {
+      "type": "log",
+      "text": "ScriptBlockPanel - scriptScenes: 0",
+      "location": {
+        "url": "http://localhost:5173/src/components/ScriptBlockPanel.tsx",
+        "lineNumber": 40,
+        "columnNumber": 12
+      }
+    },
+    {
+      "type": "log",
+      "text": "ScriptBlockPanel - scriptScenes data: []",
+      "location": {
+        "url": "http://localhost:5173/src/components/ScriptBlockPanel.tsx",
+        "lineNumber": 41,
+        "columnNumber": 12
+      }
+    },
+    {
+      "type": "log",
+      "text": "ScriptBlockPanel - scriptBlocks: 0",
+      "location": {
+        "url": "http://localhost:5173/src/components/ScriptBlockPanel.tsx",
+        "lineNumber": 39,
+        "columnNumber": 12
+      }
+    },
+    {
+      "type": "log",
+      "text": "ScriptBlockPanel - scriptScenes: 0",
+      "location": {
+        "url": "http://localhost:5173/src/components/ScriptBlockPanel.tsx",
+        "lineNumber": 40,
+        "columnNumber": 12
+      }
+    },
+    {
+      "type": "log",
+      "text": "ScriptBlockPanel - scriptScenes data: []",
+      "location": {
+        "url": "http://localhost:5173/src/components/ScriptBlockPanel.tsx",
+        "lineNumber": 41,
+        "columnNumber": 12
+      }
+    },
+    {
+      "type": "log",
+      "text": "ScriptBlockPanel - scriptBlocks: 5",
+      "location": {
+        "url": "http://localhost:5173/src/components/ScriptBlockPanel.tsx",
+        "lineNumber": 39,
+        "columnNumber": 12
+      }
+    },
+    {
+      "type": "log",
+      "text": "ScriptBlockPanel - scriptScenes: 0",
+      "location": {
+        "url": "http://localhost:5173/src/components/ScriptBlockPanel.tsx",
+        "lineNumber": 40,
+        "columnNumber": 12
+      }
+    },
+    {
+      "type": "log",
+      "text": "ScriptBlockPanel - scriptScenes data: []",
+      "location": {
+        "url": "http://localhost:5173/src/components/ScriptBlockPanel.tsx",
+        "lineNumber": 41,
+        "columnNumber": 12
+      }
+    },
+    {
+      "type": "log",
+      "text": "ScriptBlockPanel - scriptBlocks: 5",
+      "location": {
+        "url": "http://localhost:5173/src/components/ScriptBlockPanel.tsx",
+        "lineNumber": 39,
+        "columnNumber": 12
+      }
+    },
+    {
+      "type": "log",
+      "text": "ScriptBlockPanel - scriptScenes: 0",
+      "location": {
+        "url": "http://localhost:5173/src/components/ScriptBlockPanel.tsx",
+        "lineNumber": 40,
+        "columnNumber": 12
+      }
+    },
+    {
+      "type": "log",
+      "text": "ScriptBlockPanel - scriptScenes data: []",
+      "location": {
+        "url": "http://localhost:5173/src/components/ScriptBlockPanel.tsx",
+        "lineNumber": 41,
+        "columnNumber": 12
+      }
+    },
+    {
+      "type": "log",
+      "text": "ScriptBlockPanel - scriptBlocks: 5",
+      "location": {
+        "url": "http://localhost:5173/src/components/ScriptBlockPanel.tsx",
+        "lineNumber": 39,
+        "columnNumber": 12
+      }
+    },
+    {
+      "type": "log",
+      "text": "ScriptBlockPanel - scriptScenes: 0",
+      "location": {
+        "url": "http://localhost:5173/src/components/ScriptBlockPanel.tsx",
+        "lineNumber": 40,
+        "columnNumber": 12
+      }
+    },
+    {
+      "type": "log",
+      "text": "ScriptBlockPanel - scriptScenes data: []",
+      "location": {
+        "url": "http://localhost:5173/src/components/ScriptBlockPanel.tsx",
+        "lineNumber": 41,
+        "columnNumber": 12
+      }
+    },
+    {
+      "type": "log",
+      "text": "ScriptBlockPanel - scriptBlocks: 5",
+      "location": {
+        "url": "http://localhost:5173/src/components/ScriptBlockPanel.tsx",
+        "lineNumber": 39,
+        "columnNumber": 12
+      }
+    },
+    {
+      "type": "log",
+      "text": "ScriptBlockPanel - scriptScenes: 0",
+      "location": {
+        "url": "http://localhost:5173/src/components/ScriptBlockPanel.tsx",
+        "lineNumber": 40,
+        "columnNumber": 12
+      }
+    },
+    {
+      "type": "log",
+      "text": "ScriptBlockPanel - scriptScenes data: []",
+      "location": {
+        "url": "http://localhost:5173/src/components/ScriptBlockPanel.tsx",
+        "lineNumber": 41,
+        "columnNumber": 12
+      }
+    }
+  ],
+  "pageErrors": [],
+  "failedRequests": [],
+  "summary": {
+    "total": 6,
+    "passed": 3,
+    "failed": 0,
+    "warnings": 1,
+    "consoleErrors": 0,
+    "pageErrors": 0,
+    "failedRequests": 0
+  }
+}

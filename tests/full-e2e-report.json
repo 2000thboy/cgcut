@@ -1,77 +1,62 @@
 {
-  "timestamp": "2026-01-09T18:26:46.940Z",
+  "timestamp": "2026-01-28T18:24:48.197Z",
   "summary": {
-    "total": 11,
-    "passed": 11,
-    "failed": 0
+    "total": 7,
+    "passed": 6,
+    "failed": 1
   },
   "tests": [
     {
       "name": "CLIP服务连接",
       "status": "passed",
-      "duration": 24,
-      "detail": "模型: openai/clip-vit-base-patch32, 设备: cpu"
+      "duration": 32,
+      "detail": "模型: OFA-Sys/chinese-clip-vit-base-patch16, 设备: cpu"
     },
     {
       "name": "VLM服务连接",
-      "status": "passed",
+      "status": "failed",
       "duration": 4,
-      "detail": "模型: CLIP-based, 设备: cpu"
+      "error": "状态异常: undefined"
     },
     {
       "name": "智谱AI API连接",
       "status": "passed",
-      "duration": 507,
+      "duration": 539,
       "detail": "响应正常, model: glm-4-plus"
     },
     {
       "name": "剧本分镜拆解完整流程",
       "status": "passed",
-      "duration": 14442,
+      "duration": 3966,
       "detail": "1个场景, 7个镜头"
     },
     {
       "name": "CLIP文字搜索功能",
       "status": "passed",
-      "duration": 2,
-      "detail": "返回 0 个结果"
+      "duration": 310,
+      "detail": "返回 5 个结果"
     },
     {
       "name": "CLIP扫描端点可用",
       "status": "passed",
-      "duration": 2,
+      "duration": 4,
       "detail": "端点响应正常, status: 200"
     },
     {
       "name": "VLM描述端点可用",
       "status": "passed",
-      "duration": 1,
-      "detail": "端点响应正常, status: 422"
-    },
-    {
-      "name": "前端页面加载",
-      "status": "passed",
-      "duration": 704,
-      "detail": "标题: cgcut - 导演分镜验证工具"
-    },
-    {
-      "name": "主要UI组件渲染",
-      "status": "passed",
-      "duration": 1034,
-      "detail": "React应用正常渲染"
-    },
-    {
-      "name": "导入剧本按钮存在",
-      "status": "passed",
-      "duration": 15,
-      "detail": "找到按钮: \"导入剧本\""
-    },
-    {
-      "name": "无严重JavaScript错误",
-      "status": "passed",
-      "duration": 2003,
-      "detail": "无JS错误"
+      "duration": 3,
+      "detail": "端点响应正常, status: 404"
     }
   ],
-  "errors": []
+  "errors": [
+    {
+      "test": "VLM服务连接",
+      "error": "状态异常: undefined"
+    },
+    {
+      "test": "前端UI测试",
+      "error": "browserType.launch: Failed to launch chromium because executable doesn't exist at C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
+    }
+  ]
 }

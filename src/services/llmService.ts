@@ -85,9 +85,30 @@ const ZHIPU_CONFIG: LLMServiceConfig = {
 };
 
 /**
- * 默认配置（优先使用智谱API）
+ * 默认配置（自动检测可用的API）
+ * 优先使用环境变量中配置的API，否则尝试NVIDIA
  */
-const DEFAULT_CONFIG: LLMServiceConfig = ZHIPU_CONFIG;
+const getDefaultConfig = (): LLMServiceConfig => {
+  // 检查是否有有效的智谱API Key
+  const zhipuKey = import.meta.env.VITE_ZHIPU_API_KEY;
+  if (zhipuKey && zhipuKey.length > 10 && !zhipuKey.includes('your_')) {
+    console.log('✅ 使用环境变量中的智谱AI API');
+    return ZHIPU_CONFIG;
+  }
+
+  // 检查是否有有效的NVIDIA API Key
+  const nvidiaKey = import.meta.env.VITE_NVIDIA_API_KEY;
+  if (nvidiaKey && nvidiaKey.length > 10 && !nvidiaKey.includes('your_')) {
+    console.log('✅ 使用环境变量中的NVIDIA API');
+    return NVIDIA_CONFIG;
+  }
+
+  // 如果都没有配置，尝试NVIDIA（备用Key更可能有效）
+  console.log('⚠️ 未检测到有效的API Key配置，尝试使用NVIDIA备用API');
+  return NVIDIA_CONFIG;
+};
+
+const DEFAULT_CONFIG: LLMServiceConfig = getDefaultConfig();
 
 /**
  * LLM 剧本分析服务
@@ -105,40 +126,40 @@ export class LLMService {
    */
   private robustJSONParse(rawContent: string): any {
     console.log('🔧 启动超级健壮JSON解析引擎...');
-    
+
     // Step 1: 提取JSON部分
     let jsonStr = rawContent;
-    
+
     // 移除markdown代码块
     jsonStr = jsonStr.replace(/```json\s*/gi, '').replace(/```\s*/gi, '');
-    
+
     // 找到JSON对象的边界
     const firstBrace = jsonStr.indexOf('{');
     const lastBrace = jsonStr.lastIndexOf('}');
-    
+
     if (firstBrace === -1 || lastBrace === -1) {
       throw new Error('未找到JSON对象边界');
     }
-    
+
     jsonStr = jsonStr.substring(firstBrace, lastBrace + 1);
     console.log('📏 提取的JSON长度:', jsonStr.length);
-    
+
     // Step 2: 尝试直接解析
     try {
       return JSON.parse(jsonStr);
     } catch (e) {
       console.log('⚠️ 直接解析失败，启动修复流程...');
     }
-    
+
     // Step 3: 逐字符处理，修复字符串内的问题
     let result = '';
     let inString = false;
     let escaped = false;
-    
+
     for (let i = 0; i < jsonStr.length; i++) {
       const char = jsonStr[i];
       const charCode = char.charCodeAt(0);
-      
+
       // 处理转义状态
       if (escaped) {
         // 检查是否是有效的转义序列
@@ -151,21 +172,21 @@ export class LLMService {
         escaped = false;
         continue;
       }
-      
+
       // 检测转义符
       if (char === '\\') {
         escaped = true;
         result += char;
         continue;
       }
-      
+
       // 检测字符串边界
       if (char === '"') {
         inString = !inString;
         result += char;
         continue;
       }
-      
+
       // 在字符串内部的特殊处理
       if (inString) {
         // 处理换行符
@@ -187,10 +208,10 @@ export class LLMService {
           continue;
         }
       }
-      
+
       result += char;
     }
-    
+
     // Step 4: 修复常见的结构问题
     // 修复对象/数组之间缺少逗号
     result = result
@@ -198,22 +219,22 @@ export class LLMService {
       .replace(/\](\s*)\[/g, '],$1[')
       .replace(/\}(\s*)\[/g, '},$1[')
       .replace(/\](\s*)\{/g, '],$1{');
-    
+
     // 修复值之间缺少逗号 (数字/布尔/null 后面直接跟 ")
     result = result.replace(/([0-9]|true|false|null)(\s+)"/g, '$1,$2"');
-    
+
     // 修复字符串之间缺少逗号
     result = result.replace(/"(\s+)"/g, '",$1"');
-    
+
     // 移除尾随逗号
     result = result.replace(/,(\s*[}\]])/g, '$1');
-    
+
     // Step 5: 平衡括号
     const openBraces = (result.match(/\{/g) || []).length;
     const closeBraces = (result.match(/\}/g) || []).length;
     const openBrackets = (result.match(/\[/g) || []).length;
     const closeBrackets = (result.match(/\]/g) || []).length;
-    
+
     if (openBraces > closeBraces) {
       console.log(`⚠️ 补齐 ${openBraces - closeBraces} 个 }`);
       result += '}'.repeat(openBraces - closeBraces);
@@ -223,14 +244,14 @@ export class LLMService {
       // 需要在最后一个}之前插入]
       const lastBracePos = result.lastIndexOf('}');
       if (lastBracePos > 0) {
-        result = result.substring(0, lastBracePos) + 
-                 ']'.repeat(openBrackets - closeBrackets) + 
-                 result.substring(lastBracePos);
+        result = result.substring(0, lastBracePos) +
+          ']'.repeat(openBrackets - closeBrackets) +
+          result.substring(lastBracePos);
       } else {
         result += ']'.repeat(openBrackets - closeBrackets);
       }
     }
-    
+
     // Step 6: 最终解析
     try {
       console.log('🔍 修复后JSON预览:', result.substring(0, 300));
@@ -243,20 +264,20 @@ export class LLMService {
       return this.extractDataByRegex(rawContent);
     }
   }
-  
+
   /**
    * 使用正则表达式提取数据（最后的备用方案）
    */
   private extractDataByRegex(content: string): any {
     console.log('🔧 使用正则提取模式...');
-    
+
     // 提取所有镜头文本
     const blocks: any[] = [];
     let blockIndex = 0;
-    
+
     // 从原始内容中提取镜头描述
     const textMatches = content.match(/\[([特近中全远]景?|特写)\][^\[]+/g) || [];
-    
+
     for (const text of textMatches) {
       // 解析格式: [景别] 内容 | 情绪 | 时长
       const parts = text.split('|').map(s => s.trim());
@@ -271,7 +292,7 @@ export class LLMService {
         });
       }
     }
-    
+
     if (blocks.length > 0) {
       console.log(`✅ 正则提取成功: ${blocks.length} 个镜头`);
       return {
@@ -282,7 +303,7 @@ export class LLMService {
         }]
       };
     }
-    
+
     throw new Error('无法从LLM响应中提取有效数据');
   }
 
@@ -293,7 +314,7 @@ export class LLMService {
     const startTime = Date.now();
 
     const providerName = this.config.provider === 'zhipu' ? '智谱AI' : 'NVIDIA';
-    
+
     try {
       console.log('\n========================================');
       console.log('🤖 LLM Service: Starting script analysis...');
@@ -321,11 +342,11 @@ export class LLMService {
       };
     } catch (error) {
       console.error('❌ LLM Service: Analysis failed', error);
-      
+
       // ⚠️ MVP阶段：不要静默回退，而是明确报错
       // 这样用户知道是API问题而不是解析问题
       const errorMessage = error instanceof Error ? error.message : String(error);
-      
+
       // 检查是否是网络错误或API错误
       if (errorMessage.includes('API') || errorMessage.includes('network') || errorMessage.includes('fetch')) {
         throw new Error(
@@ -338,7 +359,7 @@ export class LLMService {
           `请检查网络连接或稍后重试。`
         );
       }
-      
+
       // 其他错误直接抛出
       throw error;
     }
@@ -351,12 +372,12 @@ export class LLMService {
     const providerName = this.config.provider === 'zhipu' ? '智谱AI' : 'NVIDIA';
     const modelName = this.config.model || 'unknown';
     const apiEndpoint = this.config.apiEndpoint;
-    
+
     console.log(`🚀 准备调用 ${providerName} API...`);
     console.log(`🎯 模型: ${modelName}`);
     console.log(`🌐 API端点: ${apiEndpoint}`);
     console.log(`📝 剧本长度: ${request.scriptContent.length} 字符`);
-    
+
     // 专业分镜拆解 Prompt (MCP - Master Camera Plan)
     // 引用项目知识库
     const prompt = `你是一位资深影视导演和分镜师，拥有15年以上的专业经验。
@@ -407,17 +428,17 @@ ${request.scriptContent}
     try {
       console.log(`⏳ 开始发送 API 请求...`);
       const startTime = Date.now();
-      
+
       // 增加超时时间到180秒，避免长剧本分析超时
       const timeoutMs = this.config.timeout || 180000;
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
-        console.log(`⚠️ 请求超时 (${timeoutMs/1000}秒)，正在中断...`);
+        console.log(`⚠️ 请求超时 (${timeoutMs / 1000}秒)，正在中断...`);
         controller.abort();
       }, timeoutMs);
 
       console.log(`📡 正在调用 ${this.config.apiEndpoint}...`);
-      console.log(`⏱️ 超时设置: ${timeoutMs/1000}秒`);
+      console.log(`⏱️ 超时设置: ${timeoutMs / 1000}秒`);
 
       const response = await fetch(this.config.apiEndpoint, {
         method: 'POST',
@@ -479,13 +500,13 @@ ${request.scriptContent}
 
       if (parsed.scenes && Array.isArray(parsed.scenes)) {
         console.log(`🎬 Found ${parsed.scenes.length} scenes`);
-        
+
         parsed.scenes.forEach((scene: any, sceneIndex: number) => {
           const sceneId = scene.id || `scene_${Date.now()}_${sceneIndex}`;
           const sceneBlocks: ScriptBlock[] = [];
-          
+
           console.log(`🎬 Scene ${sceneIndex + 1}: ${scene.name}, blocks: ${scene.blocks?.length || 0}`);
-          
+
           if (scene.blocks && Array.isArray(scene.blocks)) {
             scene.blocks.forEach((block: any, blockIndex: number) => {
               const scriptBlock: ScriptBlock = {
@@ -515,16 +536,16 @@ ${request.scriptContent}
       console.log(`   场景数：${scenes.length}`);
       console.log(`   镜头数：${blocks.length}`);
       console.log(`   总时长：${blocks.reduce((sum, b) => sum + b.expected_duration, 0).toFixed(1)}秒`);
-      
+
       // ⚠️ MVP检查：验证拆解质量
       if (scenes.length === 0) {
         throw new Error('⚠️ LLM未返回任何场景，拆解失败');
       }
-      
+
       if (blocks.length === 0) {
         throw new Error('⚠️ LLM未返回任何镜头，拆解失败');
       }
-      
+
       // 检查每个场景是否至少有3个镜头
       const invalidScenes = scenes.filter(s => s.blocks.length < 3);
       if (invalidScenes.length > 0) {
@@ -554,7 +575,7 @@ ${request.scriptContent}
       };
     } catch (error) {
       console.error(`❌ ${providerName} API call failed:`, error);
-      
+
       // 处理 AbortError（超时）
       if (error instanceof Error) {
         if (error.name === 'AbortError' || error.message.includes('aborted')) {
@@ -569,7 +590,7 @@ ${request.scriptContent}
           );
         }
       }
-      
+
       throw error;
     }
   }

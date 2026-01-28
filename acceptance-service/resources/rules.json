@@ -1,0 +1,7 @@
+{
+  "coverage_min": 0.9,
+  "similarity_min": 70,
+  "emotion_match_min": 0.6,
+  "duration_tolerance": 0.2,
+  "duration_pass_min": 0.8
+}

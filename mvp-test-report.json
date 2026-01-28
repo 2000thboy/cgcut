@@ -1,9 +1,9 @@
 {
-  "timestamp": "2026-01-09T15:55:23.064Z",
+  "timestamp": "2026-01-13T11:09:13.097Z",
   "summary": {
     "total": 31,
-    "passed": 30,
-    "failed": 1,
+    "passed": 31,
+    "failed": 0,
     "warnings": 0,
     "skipped": 0
   },
@@ -14,13 +14,13 @@
         {
           "name": "服务连接测试",
           "status": "passed",
-          "duration": 18,
+          "duration": 49,
           "data": null
         },
         {
           "name": "CLIP状态端点 (/clip)",
           "status": "passed",
-          "duration": 3,
+          "duration": 1,
           "data": {
             "status": "ok",
             "model": "openai/clip-vit-base-patch32",
@@ -40,7 +40,7 @@
         {
           "name": "CLIP模型加载验证",
           "status": "passed",
-          "duration": 1,
+          "duration": 2,
           "data": {
             "model": "openai/clip-vit-base-patch32",
             "device": "cpu"
@@ -49,38 +49,38 @@
         {
           "name": "扫描端点 (/clip/scan)",
           "status": "passed",
-          "duration": 2
+          "duration": 1
         },
         {
           "name": "单文件处理端点 (/clip/process)",
           "status": "passed",
-          "duration": 2
+          "duration": 1
         },
         {
           "name": "文字搜索端点 (/clip/search)",
           "status": "passed",
-          "duration": 1,
+          "duration": 1487,
           "data": {
-            "total": 0
+            "total": 5,
+            "searched": 2993
           }
         },
         {
           "name": "多条件搜索端点 (/clip/search-multi)",
-          "status": "failed",
-          "duration": 1,
-          "message": "HTTP 422"
+          "status": "passed",
+          "duration": 1498
         },
         {
           "name": "结果保存端点 (/clip/save-results)",
           "status": "passed",
-          "duration": 2
+          "duration": 3894
         },
         {
           "name": "获取结果端点 (/clip/results)",
           "status": "passed",
-          "duration": 1,
+          "duration": 4702,
           "data": {
-            "total": 0
+            "total": 2993
           }
         }
       ],
@@ -95,24 +95,13 @@
         {
           "name": "服务连接测试",
           "status": "passed",
-          "duration": 3,
-          "data": {
-            "service": "MiniMind-V 视频描述服务",
-            "version": "1.0.0",
-            "status": "running",
-            "device": "cpu",
-            "endpoints": {
-              "/vlm": "服务状态",
-              "/vlm/describe": "生成单个视频描述",
-              "/vlm/batch": "批量生成描述"
-            },
-            "model": "CLIP-based"
-          }
+          "duration": 34,
+          "data": null
         },
         {
           "name": "VLM状态端点 (/vlm)",
           "status": "passed",
-          "duration": 2,
+          "duration": 1,
           "data": {
             "status": "ok",
             "model": "CLIP-based",
@@ -123,25 +112,17 @@
         {
           "name": "描述生成端点 (/vlm/describe)",
           "status": "passed",
-          "duration": 2
+          "duration": 1
         },
         {
           "name": "批量处理端点 (/vlm/batch)",
           "status": "passed",
-          "duration": 2
+          "duration": 1
         }
       ],
       "details": {
-        "service": "MiniMind-V 视频描述服务",
-        "version": "1.0.0",
-        "status": "running",
-        "device": "cpu",
-        "endpoints": {
-          "/vlm": "服务状态",
-          "/vlm/describe": "生成单个视频描述",
-          "/vlm/batch": "批量生成描述"
-        },
-        "model": "CLIP-based"
+        "model": "CLIP-based",
+        "device": "cpu"
       }
     },
     "llm": {
@@ -150,15 +131,15 @@
         {
           "name": "智谱AI API连接",
           "status": "passed",
-          "duration": 531,
+          "duration": 6059,
           "data": {
-            "response": "你好！很高兴见到你！有什么我可以帮助你的"
+            "response": "你好！很高兴见到你！😊 有什么"
           }
         },
         {
           "name": "剧本分镜拆解功能",
           "status": "passed",
-          "duration": 8597,
+          "duration": 6077,
           "data": {
             "preview": "```json\n{\n  \"scenes\": [\n    {\n      \"id\": \"scene_1\",\n      \"name\": \"办公室紧张时刻\",\n      \"blocks\": [\n        {\n          \"id\": \"block_1\",\n          \"text\": \"[中景] 王晓坐在办公桌前，眼神紧张地看着电脑屏幕，手指在键盘上快速敲打\",\n          \"emotion\": \"紧张\",\n          \"expected_duration\": 4.0\n        },\n        {\n          \"id\": \"block_2\","
           }
@@ -166,12 +147,12 @@
         {
           "name": "JSON格式输出能力",
           "status": "passed",
-          "duration": 2676
+          "duration": 1411
         }
       ],
       "details": {
         "model": "glm-4-plus",
-        "response": "你好！很高兴见到你！有什么我可以帮助你的",
+        "response": "你好！很高兴见到你！😊 有什么",
         "scriptAnalysis": "working"
       }
     },
@@ -213,7 +194,7 @@
         {
           "name": "searchService.ts - 搜索功能",
           "status": "passed",
-          "duration": 0,
+          "duration": 1,
           "data": {
             "hasTagSearch": true,
             "hasSemanticSearch": true,
@@ -255,7 +236,7 @@
         {
           "name": "MVP功能: LLM分镜拆解",
           "status": "passed",
-          "duration": 1
+          "duration": 0
         },
         {
           "name": "MVP功能: 素材库管理",
@@ -280,7 +261,7 @@
         {
           "name": "MVP功能: 拖拽排序",
           "status": "passed",
-          "duration": 0
+          "duration": 1
         },
         {
           "name": "MVP功能: 时间轴预览",
@@ -296,40 +277,33 @@
       "feature": "CLIP服务",
       "status": "PASS",
       "details": "openai/clip-vit-base-patch32 on cpu",
-      "timestamp": "2026-01-09T15:55:23.109Z"
+      "timestamp": "2026-01-13T11:09:24.744Z"
     },
     {
       "feature": "VLM服务",
       "status": "PASS",
       "details": "CLIP-based on cpu",
-      "timestamp": "2026-01-09T15:55:23.118Z"
+      "timestamp": "2026-01-13T11:09:24.781Z"
     },
     {
       "feature": "LLM服务",
       "status": "PASS",
       "details": "glm-4-plus - 剧本分析功能正常",
-      "timestamp": "2026-01-09T15:55:34.923Z"
+      "timestamp": "2026-01-13T11:09:38.328Z"
     },
     {
       "feature": "前端服务代码",
       "status": "PASS",
       "details": "所有服务文件结构完整",
-      "timestamp": "2026-01-09T15:55:34.924Z"
+      "timestamp": "2026-01-13T11:09:38.330Z"
     },
     {
       "feature": "数据模型",
       "status": "PASS",
       "details": "类型定义和状态管理完整",
-      "timestamp": "2026-01-09T15:55:34.925Z"
+      "timestamp": "2026-01-13T11:09:38.331Z"
     }
   ],
-  "issues": [
-    {
-      "type": "error",
-      "category": "clip",
-      "test": "多条件搜索端点 (/clip/search-multi)",
-      "message": "HTTP 422"
-    }
-  ],
+  "issues": [],
   "recommendations": []
 }

@@ -85,6 +85,29 @@ export interface CLIPProcessResponse {
   error?: string;
 }
 
+// 验收相关类型（轻量占位，便于调用验收服务）
+export interface AcceptanceStoryboardItem {
+  id: string;
+  text: string;
+  duration?: number;
+  emotion?: string;
+}
+
+export interface AcceptanceMatchItem {
+  block_id: string;
+  shot_id: string;
+  confidence?: number;
+  notes?: string;
+}
+
+export interface AcceptanceResponse {
+  status: 'success' | 'error';
+  passed: boolean;
+  score?: number;
+  issues?: string[];
+  details?: any;
+}
+
 /**
  * LLM 处理状态
  */

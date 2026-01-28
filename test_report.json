@@ -1,0 +1,76 @@
+{
+  "test_timestamp": "2026-01-25",
+  "environment": {
+    "platform": "Windows",
+    "python": "3.x"
+  },
+  "services": {
+    "clip": {
+      "port": 8000,
+      "status": "OK",
+      "model": "OFA-Sys/chinese-clip-vit-base-patch16",
+      "device": "cpu",
+      "tags_count": 132,
+      "categories": 13
+    },
+    "vlm": {
+      "port": 8001,
+      "status": "FAILED",
+      "error": "Connection refused - service not running"
+    },
+    "export": {
+      "port": 8002,
+      "status": "OK",
+      "output_dir": "f:\\100qoder project\\CGCUT\\exports"
+    },
+    "frontend": {
+      "port": 5173,
+      "status": "OK"
+    }
+  },
+  "tests": {
+    "llm_api": {
+      "status": "PASS",
+      "provider": "Zhipu",
+      "model": "glm-4-plus",
+      "api_key_configured": true,
+      "response_test": "OK"
+    },
+    "clip_search": {
+      "status": "PASS",
+      "mode": "qdrant",
+      "queries_tested": 4,
+      "all_returned_results": true
+    },
+    "clip_list": {
+      "status": "PASS",
+      "files_found": 10
+    },
+    "qdrant_integration": {
+      "status": "PASS",
+      "search_working": true
+    },
+    "vlm_service": {
+      "status": "FAIL",
+      "reason": "Service not running"
+    }
+  },
+  "summary": {
+    "total_tests": 5,
+    "passed": 4,
+    "failed": 1,
+    "pass_rate": "80%",
+    "services_online": "3/4",
+    "core_workflow_available": true
+  },
+  "issues": [
+    {
+      "severity": "medium",
+      "component": "VLM Service",
+      "description": "Service not running on port 8001",
+      "impact": "Visual description feature unavailable",
+      "recommendation": "Start vlm-service/vlm_server.py"
+    }
+  ],
+  "conclusion": "Core functionality operational. LLM script analysis and CLIP asset matching workflows are functional."
+}

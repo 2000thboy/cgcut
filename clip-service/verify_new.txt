@@ -1,0 +1,104 @@
+从ID 3000开始的素材 (20条):
+
+ID: 3000
+  标签: Altered Carbon - Resleeved _ Official Trailer _ Ne
+  新素材: True
+  Tags: ['面部特写', '全景镜头', '悲伤', '三渲二']
+
+ID: 3001
+  标签: Altered.Carbon.Resleeved.2020
+  新素材: True
+  Tags: ['全景镜头', '三渲二', '群体场景', '恐惧']
+
+ID: 3002
+  标签: Animated Movie _ Project Cobra _ Garena Free Fire
+  新素材: True
+  Tags: ['无人场景', '三渲二', '远景镜头', '释然']
+
+ID: 3003
+  标签: ANOTHER DAY OF LIFE Music Video
+  新素材: True
+  Tags: ['手部特写', '三渲二', '远景镜头', '释然']
+
+ID: 3004
+  标签: ANOTHER DAY OF LIFE Official Trailer
+  新素材: True
+  Tags: ['全景镜头', '三渲二', '群体场景', '恐惧']
+
+ID: 3005
+  标签: Another Day of Life _ Jeszcze Dzień Życia Oficjaln
+  新素材: True
+  Tags: ['全景镜头', '三渲二', '群体场景', '恐惧']
+
+ID: 3006
+  标签: BLACKLIST Golden Wolf - Supercell Clash of Clans_ 
+  新素材: True
+  Tags: ['全景镜头', '三渲二', '群体场景', '恐惧']
+
+ID: 3007
+  标签: Bonus Scene - 'Mischief Managed' - S.P.A.R.K.L.E S
+  新素材: True
+  Tags: ['面部特写', '全景镜头', '三渲二', '恐惧']
+
+ID: 3008
+  标签: Bubble Witch Saga 3 Trailer
+  新素材: True
+  Tags: ['群体场景', '三渲二', '远景镜头', '恐惧']
+
+ID: 3009
+  标签: Call of the Mountain - Launch Trailer _ New Expans
+  新素材: True
+  Tags: ['面部特写', '三渲二', '远景镜头', '恐惧']
+
+ID: 3010
+  标签: CGI Animated Short Film - 'The Spark' by Zheeshee 
+  新素材: True
+  Tags: ['面部特写', '全景镜头', '三渲二', '恐惧']
+
+ID: 3011
+  标签: Don't Mess Up Your First Commission _ Zenless Zone
+  新素材: True
+  Tags: ['全景镜头', '三渲二', '群体场景', '恐惧']
+
+ID: 3012
+  标签: DUELISTS __ Official Launch Cinematic Trailer - VA
+  新素材: True
+  Tags: ['全景镜头', '三渲二', '群体场景', '恐惧']
+
+ID: 3013
+  标签: Dustborn Gameplay - Developer presentation - Futur
+  新素材: True
+  Tags: ['三渲二', '远景镜头', '游戏CG', '无人场景', '恐惧']
+
+ID: 3014
+  标签: Empires and Puzzles
+  新素材: True
+  Tags: ['无人场景', '全景镜头', '三渲二', '恐惧']
+
+ID: 3015
+  标签: ENSLAVED Pigsy's Perfect 10 on Vimeo
+  新素材: True
+  Tags: ['全景镜头', '三渲二', '群体场景', '恐惧']
+
+ID: 3016
+  标签: Everwild
+  新素材: True
+  Tags: ['物体特写', '三渲二', '远景镜头', '恐惧']
+
+ID: 3017
+  标签: Everwild_ Eternals Trailer
+  新素材: True
+  Tags: ['物体特写', '三渲二', '远景镜头', '恐惧']
+
+ID: 3018
+  标签: Granblue Fantasy - Versus - Cagliostro DLC Charact
+  新素材: True
+  Tags: ['群体场景', '三渲二', '愤怒', '远景镜头']
+
+ID: 3019
+  标签: JESZCZE DZIEŃ ŻYCIA (Polish version)
+  新素材: True
+  Tags: ['全景镜头', '三渲二', '群体场景', '恐惧']
+
+
+统计: 新素材 20/20
