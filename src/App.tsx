@@ -128,6 +128,7 @@ function App() {
         
         // 更新状态
         setScriptBlocks(response.blocks);
+        console.log('🎬 Setting script scenes:', response.scenes);
         setScriptScenes(response.scenes);
         
         // ✨ MVP修复：自动为每个block创建占位Clip

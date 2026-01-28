@@ -89,6 +89,9 @@ const VideoPreview: React.FC = () => {
       
       if (playbackState.current_time >= startTime && playbackState.current_time < endTime) {
         const internalTime = (playbackState.current_time - startTime) + clip.trim_in;
+        // 更新播放状态中的当前剧本段落ID
+        const { setPlaybackState } = useAppStore.getState();
+        setPlaybackState({ current_script_block_id: clip.script_block_id });
         return { clip, index: i, internalTime, startTime };
       }
       
@@ -102,23 +105,26 @@ const VideoPreview: React.FC = () => {
   
   // 播放循环
   useEffect(() => {
-    if (playbackState.is_playing) {
+    if (playbackState.is_playing && clips.length > 0) {
       const updatePlayback = () => {
-        const totalDuration = clips.reduce((sum, clip) => sum + clip.duration, 0);
-        const newTime = playbackState.current_time + 0.016;
-        
-        if (newTime >= totalDuration) {
+        try {
+          const totalDuration = clips.reduce((sum, clip) => sum + clip.duration, 0);
+          const newTime = playbackState.current_time + 0.016;
+
+          if (newTime >= totalDuration) {
+            pause();
+            seek(0);
+          } else {
+            seek(newTime);
+          }
+        } catch (error) {
+          console.error('Playback update error:', error);
           pause();
-          seek(0);
-        } else {
-          seek(newTime);
         }
-        
-        animationFrameRef.current = requestAnimationFrame(updatePlayback);
       };
-      
+
       animationFrameRef.current = requestAnimationFrame(updatePlayback);
-      
+
       return () => {
         if (animationFrameRef.current) {
           cancelAnimationFrame(animationFrameRef.current);

@@ -42,6 +42,12 @@ export const ScriptBlockPanel: React.FC<ScriptBlockPanelProps> = ({ className })
   
   // 根据播放时间查找当前段落
   const getCurrentBlockId = () => {
+    // 优先使用播放状态中已记录的current_script_block_id
+    if (playbackState.current_script_block_id) {
+      return playbackState.current_script_block_id;
+    }
+    
+    // 回退到基于时间的计算
     let accumulatedTime = 0;
     for (const clip of clips) {
       const endTime = accumulatedTime + clip.duration;
