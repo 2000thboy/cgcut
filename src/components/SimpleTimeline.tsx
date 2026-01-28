@@ -1,11 +1,47 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useSortable, SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable';
 import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Clip } from '../types/DataModel';
 import { useAppStore } from '../store/appStore';
 
-const PIXELS_PER_SECOND = 60; // 时间轴缩放比例
+// 响应式时间轴缩放 Hook
+const useResponsiveTimelineScale = () => {
+  const [scale, setScale] = useState(60); // 默认60px/秒
+  const timelineRef = useRef<HTMLDivElement>(null);
+  
+  const updateScale = useCallback(() => {
+    if (timelineRef.current) {
+      const containerWidth = timelineRef.current.clientWidth;
+      // 动态计算缩放比例，确保时间轴在容器内合理显示
+      const minScale = 30; // 最小30px/秒
+      const maxScale = 120; // 最大120px/秒
+      const preferredScale = Math.min(Math.max(containerWidth / 30, minScale), maxScale);
+      setScale(preferredScale);
+    }
+  }, []);
+
+  useEffect(() => {
+    // 使用 ResizeObserver 监听容器尺寸变化
+    const resizeObserver = new ResizeObserver(() => {
+      updateScale();
+    });
+    
+    if (timelineRef.current) {
+      resizeObserver.observe(timelineRef.current);
+      updateScale(); // 初始计算
+    }
+    
+    return () => {
+      if (timelineRef.current) {
+        resizeObserver.unobserve(timelineRef.current);
+      }
+      resizeObserver.disconnect();
+    };
+  }, [updateScale]);
+
+  return { scale, timelineRef };
+};
 
 interface TimelineProps {
   className?: string;
@@ -20,11 +56,11 @@ function formatTime(seconds: number): string {
 }
 
 // 播放指示器组件
-const PlayheadIndicator: React.FC<{ currentTime: number }> = ({ currentTime }) => {
+const PlayheadIndicator: React.FC<{ currentTime: number; pixelsPerSecond: number }> = ({ currentTime, pixelsPerSecond }) => {
   return (
     <div
       className="absolute top-0 bottom-0 w-0.5 bg-red-500 z-10 pointer-events-none"
-      style={{ left: `${currentTime * PIXELS_PER_SECOND}px` }}
+      style={{ left: `${currentTime * pixelsPerSecond}px` }}
     >
       <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-red-500 rounded-full" />
     </div>
@@ -205,14 +241,14 @@ const VideoPreview: React.FC = () => {
 };
 
 // 时间刻度标尺组件
-const TimeRuler: React.FC<{ totalDuration: number }> = ({ totalDuration }) => {
+const TimeRuler: React.FC<{ totalDuration: number; pixelsPerSecond: number }> = ({ totalDuration, pixelsPerSecond }) => {
   const markers = [];
   for (let time = 0; time <= Math.ceil(totalDuration); time++) {
     markers.push(
       <div
         key={time}
         className="absolute flex flex-col items-center"
-        style={{ left: `${time * PIXELS_PER_SECOND}px` }}
+        style={{ left: `${time * pixelsPerSecond}px` }}
       >
         <div className="w-px h-4 bg-gray-500" />
         {time % 5 === 0 && (
@@ -229,7 +265,7 @@ const TimeRuler: React.FC<{ totalDuration: number }> = ({ totalDuration }) => {
         <div
           key={`${time}.5`}
           className="absolute"
-          style={{ left: `${(time + 0.5) * PIXELS_PER_SECOND}px` }}
+          style={{ left: `${(time + 0.5) * pixelsPerSecond}px` }}
         >
           <div className="w-px h-2 bg-gray-600" />
         </div>
@@ -241,11 +277,12 @@ const TimeRuler: React.FC<{ totalDuration: number }> = ({ totalDuration }) => {
 };
 
 // Clip 组件
-const TimelineClip: React.FC<{ clip: Clip; isSelected: boolean; onSelect: () => void; onDelete: () => void }> = ({
+const TimelineClip: React.FC<{ clip: Clip; isSelected: boolean; onSelect: () => void; onDelete: () => void; pixelsPerSecond: number }> = ({
   clip,
   isSelected,
   onSelect,
   onDelete,
+  pixelsPerSecond,
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: clip.id });
   const getShotById = useAppStore(state => state.getShotById);
@@ -269,7 +306,7 @@ const TimelineClip: React.FC<{ clip: Clip; isSelected: boolean; onSelect: () => 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    width: `${clip.duration * PIXELS_PER_SECOND}px`,
+    width: `${clip.duration * pixelsPerSecond}px`,
     opacity: isDragging ? 0.5 : 1,
   };
   
@@ -345,7 +382,7 @@ export const SimpleTimeline: React.FC<TimelineProps> = ({ className }) => {
   const seek = useAppStore(state => state.seek);
   
   const totalDuration = clips.reduce((sum, clip) => sum + clip.duration, 0);
-  const timelineRef = useRef<HTMLDivElement>(null);
+  const { scale: pixelsPerSecond, timelineRef } = useResponsiveTimelineScale();
   
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -368,7 +405,7 @@ export const SimpleTimeline: React.FC<TimelineProps> = ({ className }) => {
     if (timelineRef.current && !target.closest('[data-clip]')) {
       const rect = timelineRef.current.getBoundingClientRect();
       const x = e.clientX - rect.left + timelineRef.current.scrollLeft;
-      const clickedTime = x / PIXELS_PER_SECOND;
+      const clickedTime = x / pixelsPerSecond;
       seek(Math.max(0, Math.min(clickedTime, totalDuration)));
     }
   };
@@ -390,7 +427,7 @@ export const SimpleTimeline: React.FC<TimelineProps> = ({ className }) => {
         {/* 时间刻度和clips */}
         <div className="flex-1 p-4 overflow-x-auto bg-gray-800" ref={timelineRef} onClick={handleTimelineClick}>
           <div className="relative">
-            <TimeRuler totalDuration={Math.max(totalDuration, 10)} />
+            <TimeRuler totalDuration={Math.max(totalDuration, 10)} pixelsPerSecond={pixelsPerSecond} />
             
             {/* Clip 容器 */}
             <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -403,12 +440,13 @@ export const SimpleTimeline: React.FC<TimelineProps> = ({ className }) => {
                         isSelected={selectedClipId === clip.id}
                         onSelect={() => selectClip(clip.id)}
                         onDelete={() => deleteClip(clip.id)}
+                        pixelsPerSecond={pixelsPerSecond}
                       />
                     </div>
                   ))}
                   
                   {/* 播放指示器 */}
-                  {clips.length > 0 && <PlayheadIndicator currentTime={playbackState.current_time} />}
+                  {clips.length > 0 &&                     <PlayheadIndicator currentTime={playbackState.current_time} pixelsPerSecond={pixelsPerSecond} />}
                 </div>
               </SortableContext>
             </DndContext>
